@@ -38,7 +38,30 @@ mySpeech = audioread('orig_input.wav');
 x1 = mySpeech';
 x2 = x1(1:length(y));
 
-melody = [y;x2];
+melody = y+x2;
 audiowrite('melody.wav',melody',44100);
 sound(melody,44100);
 
+subplot(2,1,1);
+MELODY=fft(melody);
+plot(abs(MELODY));
+
+N = fs;
+transform = fft(melody,N)/N;
+magTransform = abs(transform);
+faxis = linspace(-fs/2,fs/2,N);
+plot(faxis,fftshift(magTransform));
+xlabel('Frequency (Hz)');
+axis([0 length(faxis)/2, 0 max(magTransform)]);
+xt = get(gca,'XTick');  
+set(gca,'XTickLabel', sprintf('%.0f|',xt));
+title('FT(melody)');
+
+subplot(2,1,2);
+win = 128;
+hop = win/2;            
+nfft = win;
+spectrogram(melody,win,hop,nfft,fs,'yaxis');
+title('Spectogram(melody)');
+yt = get(gca,'YTick');  
+set(gca,'YTickLabel', sprintf('%.0f|',yt));
